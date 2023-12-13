@@ -54,28 +54,47 @@ wp_enqueue_style('chat-component-styles', plugin_dir_url("chatbot-xegure.php") .
                     src="<?php echo plugin_dir_url("chatbot-xegure.php") . 'chatbot-xegure/assets/images/xegure-chat-message.png' ?>'"
                     alt="">
             </div>
-            <p>¡Hola! ¿En qué puedo ayudarte hoy?</p>
+            <p id="bot-message">¡Hola! ¿En qué puedo ayudarte hoy?</p>
         </div>
     </div>
-    <div id="chatbot-input">
-        <input type="text" id="input-chatbot-xegure" placeholder="Escribe tu mensaje..." required="true">
-        <button id="send-button" onclick="sendMessage()">Enviar</button>
+    <div id="contain-input-chatbot-xegure">
+        <div id="input-div-xegure">
+            <input type="text" id="input-chatbot-xegure" placeholder="Escribe tu mensaje..." required="true"
+                autocomplete="off">
+            <img id="send-button" onclick="sendMessage()"
+                src="<?php echo plugin_dir_url("chatbot-xegure.php") . 'chatbot-xegure/assets/images/send-icon.png' ?>'"
+                alt="">
+        </div>
     </div>
 </div>
 
 <script>
+    let pending = false;
     async function sendMessage() {
         let message = document.getElementById('input-chatbot-xegure').value;
 
-        if (message.length) {
+        if (message.length && !pending) {
             document.getElementById('input-chatbot-xegure').value = '';
             var chatbotMessages = document.getElementById('chatbot-messages-xegure');
             // Agrega el mensaje del usuario al componente del chat
-            chatbotMessages.innerHTML += '<div id="contain-message-user"><p>' + message + '</p></div>';
+            chatbotMessages.innerHTML += '<div id="contain-message-user"><p id="user-message">' + message + '</p></div>';
+            // Agregando mensaje de espera xd
+            chatbotMessages.innerHTML += `<div id="contain-message-xegure-pending">
+                                                     <div id="contain-image-message">
+                                                        <img id="icon-chatbot-message" src="<?php echo plugin_dir_url("chatbot-xegure.php") . 'chatbot-xegure/assets/images/xegure-chat-message.png' ?>'" alt="">
+                                                     </div>
+                                                     <p id="bot-message"></p>
+                                               </div>`;
+            //scroll hacia abajo :v
             chatbotMessages.style.height = chatbotMessages.scrollHeight + 'px';
             chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
             let response = await fetch("https://jsonplaceholder.org/posts")
-            if (response.status) {
+            pending = true;
+            if (response.status == 200) {
+                pending = false;
+                //quitando mensaje de espera 
+                document.getElementById('contain-message-xegure-pending').remove();
+                //generando respuesta aleatoria
                 let json = await response.json()
                 var nRandom = Math.floor(Math.random() * 100) + 1;
                 // Puedes agregar lógica para procesar la respuesta del chatbot aquí
@@ -84,7 +103,7 @@ wp_enqueue_style('chat-component-styles', plugin_dir_url("chatbot-xegure.php") .
                                                      <div id="contain-image-message">
                                                         <img id="icon-chatbot-message" src="<?php echo plugin_dir_url("chatbot-xegure.php") . 'chatbot-xegure/assets/images/xegure-chat-message.png' ?>'" alt="">
                                                      </div>
-                                                     <p>${json[nRandom].title}</p>
+                                                     <p id="bot-message">${json[nRandom].title}</p>
                                                </div>`;
                 chatbotMessages.style.height = chatbotMessages.scrollHeight + 'px';
                 chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
