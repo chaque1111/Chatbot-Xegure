@@ -88,22 +88,19 @@ wp_enqueue_style('chat-component-styles', plugin_dir_url("chatbot-xegure.php") .
             //scroll hacia abajo :v
             chatbotMessages.style.height = chatbotMessages.scrollHeight + 'px';
             chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-            let response = await fetch("https://jsonplaceholder.org/posts")
+            let response = await fetch("https://xegure.holocruxe.com/questions?question=" + message)
             pending = true;
             if (response.status == 200) {
                 pending = false;
                 //quitando mensaje de espera 
                 document.getElementById('contain-message-xegure-pending').remove();
-                //generando respuesta aleatoria
-                let json = await response.json()
-                var nRandom = Math.floor(Math.random() * 100) + 1;
-                // Puedes agregar lógica para procesar la respuesta del chatbot aquí
-                // Por ahora, simplemente agregamos un mensaje de ejemplo
+                let data = await response.json()
+
                 chatbotMessages.innerHTML += `<div id="contain-message-xegure">
                                                      <div id="contain-image-message">
                                                         <img id="icon-chatbot-message" src="<?php echo plugin_dir_url("chatbot-xegure.php") . 'chatbot-xegure/assets/images/xegure-chat-message.png' ?>'" alt="">
                                                      </div>
-                                                     <p id="bot-message">${json[nRandom].title}</p>
+                                                     <p id="bot-message">${data.response}</p>
                                                </div>`;
                 chatbotMessages.style.height = chatbotMessages.scrollHeight + 'px';
                 chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
